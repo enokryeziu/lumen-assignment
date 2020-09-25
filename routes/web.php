@@ -18,9 +18,21 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->group(['prefix' => 'api'], function() use($router){
+$router->group(['prefix' => 'api/user'], function() use($router){
     $router->post('register', 'UserController@register');
     $router->post('login', 'UserController@login');
+});
+$router->group(['prefix' => 'api/user','middleware' => ['assign.guard:users','auth']], function() use($router){
     $router->get('logout', 'UserController@logout');
     $router->get('' , 'UserController@index');
+});
+
+
+$router->group(['prefix' => 'api/admin'], function() use($router){
+    $router->post('register', 'AdminController@register');
+    $router->post('login', 'AdminController@login');
+});
+$router->group(['prefix' => 'api/admin','middleware' => ['assign.guard:admins','auth']], function() use($router){
+    $router->get('logout', 'AdminController@logout');
+    $router->get('' , 'AdminController@index');
 });

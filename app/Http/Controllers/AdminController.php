@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
-use App\Models\User;
-use App\Models\UserDetail;
+use App\Models\Admin;
 use Exception;
 
-class UserController extends Controller
+class AdminController extends Controller
 {
     /**
      * Create a new controller instance.
@@ -19,42 +18,30 @@ class UserController extends Controller
     }
 
     public function index() {
-        return 'Welcome user';
+        return 'Welcome admin';
     }
 
     public function register(Request $request){
         $this->validate($request, [
-            'name' => 'required|string',
             'email' => 'required|email|unique:users',
             'password' => 'required',
-            'dateOfBirth' => 'date',
-            'phone' => 'string',
-            'address' => 'string',
         ]);
 
         try {
 
-            $user = new User;
-            $user->email = $request->input('email');
+            $admin = new Admin;
+            $admin->email = $request->input('email');
             $password = $request->input('password');
-            $user->password = app('hash')->make($password);
-            $user->save();
-
-            $userDetail = new UserDetail;
-            $userDetail->name = $request->input('name');
-            $userDetail->date_of_birth = $request->input('dateOfBirth');
-            $userDetail->phone = $request->input('phone');
-            $userDetail->address = $request->input('address');
-
-            $user->user_detail()->save($userDetail);
+            $admin->password = app('hash')->make($password);
+            $admin->save();
 
 
 
             $code = 200;
             $output = [
-                'user' => $user,
+                'user' => $admin,
                 'code' => $code,
-                'message' => 'User created successfully'
+                'message' => 'Admin created successfully'
             ];
 
 
@@ -64,7 +51,7 @@ class UserController extends Controller
             $code = 500;
             $output = [
                 'code' => $code,
-                'message' => 'An error occured while creating user.'
+                'message' => 'An error occured while creating admin.'
             ];
         }
 
@@ -75,7 +62,7 @@ class UserController extends Controller
     {
         $credentials = request(['email', 'password']);
 
-        if (! $token = auth('users')->attempt($credentials)) {
+        if (! $token = auth('admins')->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
@@ -84,7 +71,7 @@ class UserController extends Controller
 
     public function logout()
     {
-        auth('users')->logout();
+        auth('admins')->logout();
 
         return response()->json(['message' => 'Successfully logged out']);
     }
